@@ -21,6 +21,7 @@ var microphoneLevel = audioContext.createGain();
 microphoneLevel.gain.value = 1;
 
 function start(){
+  console.log("boom");
   if (microphone == null)
     navigator.getUserMedia({ audio: true },
       function(stream) {
@@ -33,12 +34,9 @@ function start(){
       });
 }
 
-//_______________________________Butter Set up_____________________________________________________
+//_______________________________Buffer Set up_____________________________________________________
 var encodingProcess = 'separate';       // separate | background | direct
 
-// $encodingProcess.click(function(event) {
-//   encodingProcess = $(event.target).attr('mode');
-// });
 
 // processor buffer size
 var BUFFER_SIZE = [256, 512, 1024, 2048, 4096, 8192, 16384];
@@ -71,35 +69,24 @@ var iDefBufSz = BUFFER_SIZE.indexOf(defaultBufSz);
 
 function saveRecording(blob) {
   var time = new Date(),
-      url = URL.createObjectURL(blob),
-      html = "<p recording='" + url + "'>" +
-             "<audio controls src='" + url + "'></audio> " +
-             time +
-             " <a class='btn btn-default' href='" + url +
-                  "' download='recording.wav'>" +
-             "Save...</a> " +
-             "<button class='btn btn-danger' recording='" +
-                      url + "'>Delete</button>" +
-             "</p>";
+      url = URL.createObjectURL(blob);
 
-      audio = document.createElement('AUDIO');
+  var audio = document.createElement('AUDIO');
       audio.controls = true;
       audio.src=url;
 
-  // $recordingList.prepend($(html));
-  var body = document.querySelector('body');
-  // console.log(url);
-  body.appendChild(audio);
+  var link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', "recording");
+      link.innerHTML="download";
+
+  var recordingDiv = document.querySelector('#recording');
+  recordingDiv.appendChild(link);
+  recordingDiv.appendChild(audio);
 }
 
+//_______________________________Recording Process____________________________________________________
 
-// $recordingList.on('click', 'button', function(event) {
-//   var url = $(event.target).attr('recording');
-//   $("p[recording='" + url + "']").remove();
-//   URL.revokeObjectURL(url);
-// });
-
-// recording process
 var worker = new Worker('js/wavencoder/EncoderWorker.js'),
     encoder = undefined;        // used on encodingProcess == direct
 
@@ -154,46 +141,16 @@ var startTime = null    // null indicates recording is stopped
 function minSecStr(n) { return (n < 10 ? "0" : "") + n; }
 
 function updateDateTime() {
-  // $dateTime.html((new Date).toString());
-  // if (startTime != null) {
-  //   var sec = Math.floor((Date.now() - startTime) / 1000);
-  //   $timeDisplay.html(minSecStr(sec / 60 | 0) + ":" + minSecStr(sec % 60));
-  // }
 }
 
 window.setInterval(updateDateTime, 200);
 
-// function disableControlsOnRecord(disabled) {
-  // if (microphone == null)
-  //   $microphone.attr('disabled', disabled);
-  // $bufferSize.attr('disabled', disabled);
-  // $encodingProcess.attr('disabled', disabled);
-// }
-
 function startRecording() {
   startTime = Date.now();
-  // $recording.removeClass('hidden');
-  // $record.html('STOP');
-  // $cancel.removeClass('hidden');
-  // disableControlsOnRecord(true);
   startRecordingProcess();
 }
 
 function stopRecording(finish) {
   startTime = null;
-  // $timeDisplay.html('00:00');
-  // $recording.addClass('hidden');
-  // $record.html('RECORD');
-  // $cancel.addClass('hidden');
-  // disableControlsOnRecord(false);
   stopRecordingProcess(true);
 }
-
-// $record.click(function() {
-//   if (startTime != null)
-//     stopRecording(true);
-//   else
-//     startRecording();
-// });
-//
-// $cancel.click(function() { stopRecording(false); });
