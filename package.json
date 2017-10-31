@@ -1,0 +1,11 @@
+{
+  "name": "webaudioapi",
+  "version": "1.0.0",
+  "description": "This is my personal reference sheet as I learn about the Web Audio API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
